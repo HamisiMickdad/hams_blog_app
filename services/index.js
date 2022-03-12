@@ -4,7 +4,7 @@ const graphqlAPI = process.env.NEXT_PUBLIC_GRAPHCMS_ENDPOINT;
 export const getPosts = async () => {
   const query = gql`
     query MyQuery {
-        postsConnection {
+        postsConnection (orderBy: createdAt_DESC) {
           edges {
             node {
               author {
@@ -79,7 +79,7 @@ export const getRecentPosts = async () => {
   const query = gql`
   query GetPostDetails(){
     posts(
-      orderBy: createdAt_ASC
+      orderBy: createdAt_DESC
       last: 3
       ) {
         title
@@ -101,6 +101,7 @@ export const getSimilarPosts = async (categories, slug) => {
     query GetPostDetails($slug: String!, $categories: [String!]) {
       posts(
         where: {slug_not: $slug, AND: {categories_some: {slug_in: $categories}}}
+        orderBy: createdAt_DESC
         last: 3
         ) {
           title
@@ -121,7 +122,7 @@ export const getSimilarPosts = async (categories, slug) => {
 export const getCategories = async () => {
   const query = gql`
   query GetCategories {
-    categories {
+    categories (orderBy: createdAt_DESC) {
       name
       slug
     }
@@ -162,7 +163,10 @@ export const getComments = async (slug) => {
 export const getFeaturedPosts = async () => {
   const query = gql`
     query GetCategoryPost() {
-      posts(where: {featuredPost: true}) {
+      posts(
+        where: {featuredPost: true}
+        orderBy: createdAt_DESC
+        ) {
         author {
           name
           photo {
@@ -187,7 +191,10 @@ return result.posts;
 export const getCategoryPost = async (slug) => {
   const query = gql`
     query GetCategoryPost($slug: String!) {
-      postsConnection(where: {categories_some: {slug: $slug}}) {
+      postsConnection(
+        where: {categories_some: {slug: $slug}}
+        orderBy: createdAt_DESC
+        ) {
         edges {
           cursor
           node {
@@ -226,7 +233,7 @@ export const getAdjacentPosts = async (createdAt, slug) => {
     query GetAdjacentPosts($createdAt: DateTime!,$slug:String!) {
       next:posts(
         first: 1
-        orderBy: createdAt_ASC
+        orderBy: createdAt_DESC
         where: {slug_not: $slug, AND: {createdAt_gte: $createdAt}}
       ) {
         title
